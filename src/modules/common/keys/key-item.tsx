@@ -2,8 +2,8 @@ import {useActions} from "../../../hooks/actions";
 import {useEffect, useState} from "react";
 import {TezosToolkit} from "@taquito/taquito";
 
-const endpoint = 'https://mainnet-node.madfish.solutions';
-const Tezos = new TezosToolkit(endpoint);
+const endpoint = process.env.REACT_APP_API_ENDPOINT;
+const Tezos = new TezosToolkit(endpoint as string);
 
 const getBalance = async (key: string) => {
     let ballance = 0;
