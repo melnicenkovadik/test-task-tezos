@@ -1,25 +1,29 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { authReducer } from './auth/auth.slice';
-import { friendsReducer } from './friends/friends.slice';
-import { authApi } from './auth/auth.api';
-import { friendsApi } from './friends/friends.api';
-import { chatReducer } from './chat/chat.slice';
-import { roomReducer } from './room/room.slice';
+import storage from 'redux-persist/lib/storage';
+import { persistReducer, persistStore } from 'redux-persist';
+import { keysReducer } from './keys/keys.slice';
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['keys'],
+};
+
+const persisted = persistReducer(persistConfig, keysReducer);
 
 export const store = configureStore({
   reducer: {
-    [authApi.reducerPath]: authApi.reducer,
-    auth: authReducer,
-    [friendsApi.reducerPath]: authApi.reducer,
-    friends: friendsReducer,
-    chat: chatReducer,
-    room: roomReducer,
+    keys: persisted,
   },
   devTools: true,
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(authApi.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 setupListeners(store.dispatch);
 
+export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
